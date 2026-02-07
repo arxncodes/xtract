@@ -3,20 +3,14 @@ import { api } from "@shared/routes";
 import type { GenerateWordlistRequest, WordlistResponse } from "@shared/schema";
 
 /**
- * Base API URL
- * - Local dev  → http://localhost:5000
- * - Production → Render backend
+ * Use same-origin requests.
+ * On Render, frontend + backend share the same domain.
  */
-const API_BASE =
-  import.meta.env.PROD
-    ? "https://xtract-fldn.onrender.com"
-    : "http://localhost:5000";
-
 async function fetchJSON<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(path, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -37,7 +31,8 @@ async function fetchJSON<T>(
 export function useHistory() {
   return useQuery({
     queryKey: ["wordlist-history"],
-    queryFn: () => fetchJSON(api.wordlist.history.path),
+    queryFn: () =>
+      fetchJSON<WordlistResponse[]>(api.wordlist.history.path),
   });
 }
 
