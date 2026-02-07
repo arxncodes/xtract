@@ -5,7 +5,6 @@
   "license": "MIT",
   "scripts": {
     "dev": "echo \"Use client/ or server/\"",
-    "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
