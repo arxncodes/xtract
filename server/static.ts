@@ -1,6 +1,7 @@
-import express, { type Express } from "express";
-import fs from "fs";
+import type { Express } from "express";
+import express from "express";
 import path from "path";
+import fs from "fs";
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(process.cwd(), "dist/public");
@@ -13,7 +14,8 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  app.use("*", (_req, res) => {
+  // Catch-all for SPA routing (Express 5 compatible)
+  app.get("*", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
