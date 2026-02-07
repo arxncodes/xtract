@@ -1,21 +1,29 @@
 import type { Express } from "express";
 import express from "express";
-import path from "path";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(process.cwd(), "dist/public");
+  // dist/public relative to project root
+  const distPath = path.resolve(__dirname, "../dist/public");
 
   if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find frontend build at ${distPath}. Did you run vite build?`
+    console.warn(
+      `[WARN] Frontend build not found at ${distPath}. ` +
+      `Make sure "vite build" ran before starting server.`
     );
+    return;
   }
 
+  // Serve static assets
   app.use(express.static(distPath));
 
-  // Catch-all for SPA routing (Express 5 compatible)
-  app.get("*", (_req, res) => {
+  // SPA fallback (Express 5 compatible)
+  app.get(/^(?!\/api).*/, (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
